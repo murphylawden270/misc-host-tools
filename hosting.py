@@ -6,7 +6,7 @@ import re
 import os
 import webserver
 
-token = os.environ('token')
+token = os.environ['token']
 
 user_greeting_count = {}
 class Client(commands.Bot):
