@@ -30,6 +30,7 @@ class Client(discord.Client):
             if len(teams_with_icons)%2 !=0:
                 teams_with_icons.append("Bye")
             
+            warn = []
             teams = []
             for i in teams_with_icons:
                 if re.search(r':([^:]+):', i, re.IGNORECASE):
@@ -42,10 +43,16 @@ class Client(discord.Client):
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team] = removed_icon[0]
                         teams.append(icon_removed_team)
+                    elif removed_icon[0] != removed_icon[1]:
+                        icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
+                        team_icon_pair[icon_removed_team] = ""
+                        teams.append(icon_removed_team)
+                        warn.append(f'WARNING! Team icon {removed_icon[0]} and {removed_icon[1]} do not match!\nNo icon was be printed for {icon_removed_team}.')
                     else:
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team] = ""
                         teams.append(icon_removed_team)
+                        warn.append(f'WARNING! More than 2 team icons detected!\nNo icon was be printed for {icon_removed_team}.')                        
 
             pair = []
             matchup = []
@@ -82,6 +89,9 @@ class Client(discord.Client):
             send_string = io.BytesIO(send.encode("utf-8"))
             schedule = discord.File(fp=send_string, filename='schedule.txt')
             await message.channel.send(file=schedule)
+            if warn:
+                await message.channel.send("\n".join(warn))
+
 
 intents = discord.Intents.default()
 intents.message_content = True
