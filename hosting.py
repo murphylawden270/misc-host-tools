@@ -1,5 +1,4 @@
 import discord
-from discord.ext import commands
 import random
 import io
 import re
@@ -9,7 +8,7 @@ import webserver
 token = os.environ['token']
 
 user_greeting_count = {}
-class Client(commands.Bot):
+class Client(discord.Client):
     async def on_ready(self):
         print(f"logged on as {self.user}")
 
@@ -61,7 +60,7 @@ class Client(commands.Bot):
 
 intents = discord.Intents.default()
 intents.message_content = True
-client = commands.Bot(command_prefix="!", intents=intents)
+client = Client(intents=intents)
 
 webserver.keep_alive()
 client.run(token)
