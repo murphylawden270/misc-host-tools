@@ -37,21 +37,21 @@ class Client(discord.Client):
                     removed_icon = re.findall(r':[\w-]+:', i, re.IGNORECASE)
                     if len(removed_icon) == 1:
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
-                        team_icon_pair[icon_removed_team] = removed_icon[0]
-                        teams.append(icon_removed_team)                        
+                        team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
+                        teams.append(icon_removed_team.strip())                        
                     elif removed_icon[0] == removed_icon[1]:
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
-                        team_icon_pair[icon_removed_team] = removed_icon[0]
-                        teams.append(icon_removed_team)
+                        team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
+                        teams.append(icon_removed_team.strip())
                     elif removed_icon[0] != removed_icon[1]:
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
-                        team_icon_pair[icon_removed_team] = ""
-                        teams.append(icon_removed_team)
+                        team_icon_pair[icon_removed_team.strip()] = ""
+                        teams.append(icon_removed_team.strip())
                         warn.append(f'WARNING! Team icon {removed_icon[0]} and {removed_icon[1]} do not match!\nNo icon was be printed for {icon_removed_team}.')
                     else:
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
-                        team_icon_pair[icon_removed_team] = ""
-                        teams.append(icon_removed_team)
+                        team_icon_pair[icon_removed_team.strip()] = ""
+                        teams.append(icon_removed_team.strip())
                         warn.append(f'WARNING! More than 2 team icons detected!\nNo icon was be printed for {icon_removed_team}.')                        
 
             pair = []
