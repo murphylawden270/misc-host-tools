@@ -7,7 +7,6 @@ import webserver
 
 token = os.environ['token']
 
-user_greeting_count = {}
 class Client(discord.Client):
     async def on_ready(self):
         print(f"logged on as {self.user}")
@@ -18,14 +17,40 @@ class Client(discord.Client):
         
         if re.search(r'\bschedule\b', message.content, re.IGNORECASE):
             removed_schedule = re.sub(r'\bschedule\b', '', message.content, flags=re.IGNORECASE)
-            teams = [t.strip() for t in removed_schedule.split("\n") if t.strip()]
+
+
+            team_icon_pair = {}
+
+            teams_with_icons = []
+            for line in removed_schedule.split("\n"):
+                clean = line.strip()
+                if clean:
+                    teams_with_icons.append(clean)
+
+            if len(teams_with_icons)%2 !=0:
+                teams_with_icons.append("Bye")
+            
+            teams = []
+            for i in teams_with_icons:
+                if re.search(r':([^:]+):', i, re.IGNORECASE):
+                    removed_icon = re.findall(r':[\w-]+:', i, re.IGNORECASE)
+                    if len(removed_icon) == 1:
+                        icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
+                        team_icon_pair[icon_removed_team] = removed_icon[0]
+                        teams.append(icon_removed_team)                        
+                    elif removed_icon[0] == removed_icon[1]:
+                        icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
+                        team_icon_pair[icon_removed_team] = removed_icon[0]
+                        teams.append(icon_removed_team)
+                    else:
+                        icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
+                        team_icon_pair[icon_removed_team] = ""
+                        teams.append(icon_removed_team)
+
             pair = []
             matchup = []
             matchups = []
             reply = []
-
-            if len(teams)%2 !=0:
-                teams.append("Bye")
 
             random.shuffle(teams)
 
@@ -49,7 +74,7 @@ class Client(discord.Client):
                 zaweek = f'Week {week}'
                 reply.append(zaweek)
                 for j in i:
-                    zamatchup = f'{j[0]} vs {j[1]}'
+                    zamatchup = f'{team_icon_pair[j[0]]}{j[0]} vs {j[1]}{team_icon_pair[j[1]]}'
                     reply.append(zamatchup)
                 reply.append("")
         
