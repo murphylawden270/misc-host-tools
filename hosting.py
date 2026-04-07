@@ -21,7 +21,7 @@ class Client(discord.Client):
         if re.search(r'\bschedule\b', message.content, re.IGNORECASE):
             removed_schedule = re.sub(r'\bschedule\b', '', message.content, flags=re.IGNORECASE)
 
-            if removed_schedule is "":
+            if removed_schedule == "":
                 return
 
             team_icon_pair = {}
