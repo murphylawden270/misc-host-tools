@@ -18,6 +18,17 @@ class Client(discord.Client):
         if message.author == client.user:
             return
 
+        if re.search(r'\b@help\b', message.content, re.IGNORECASE):
+            command_1 = '''# 1. Season Schedule (command: @schedule [case-insensitive])
+                            To create season schedule for a team tournament, use @schedule followed by the team names, each in a separate line. Note: This command supports :pokemon: icons; however, you must maintain certain formatting:
+                            * Team :white_check_mark:
+                            * :pokemon: Team :pokemon: | :pokemon:Team:pokemon: :white_check_mark: 
+                            * :pokemon: Team | :pokemon:Team | Team: pokemon: | Team:pokemon: :white_check_mark:
+                            * :pokemon1:Team:pokemon2: | :pokemon1: Team: pokemon2: :x: No icon will be printed for that team.
+                            * :pokemon:Team:pokemon::pokemon: :grey_question: Icon printed only if icon 1 and icon 2 are same.'''
+            
+            await message.channel.send(command_1)
+
         if re.search(r'\bschedule\b', message.content, re.IGNORECASE):
             removed_schedule = re.sub(r'\bschedule\b', '', message.content, flags=re.IGNORECASE)
 
