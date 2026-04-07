@@ -18,14 +18,16 @@ class Client(discord.Client):
         if message.author == client.user:
             return
 
-        if re.search(r'\b@help\b', message.content, re.IGNORECASE):
+        if re.search(r'(?<!\w)@help(?!\w)', message.content, re.IGNORECASE):
             command_1 = '''# 1. Season Schedule (command: @schedule [case-insensitive])
                             To create season schedule for a team tournament, use @schedule followed by the team names, each in a separate line. Note: This command supports :pokemon: icons; however, you must maintain certain formatting:
                             * Team :white_check_mark:
                             * :pokemon: Team :pokemon: | :pokemon:Team:pokemon: :white_check_mark: 
                             * :pokemon: Team | :pokemon:Team | Team: pokemon: | Team:pokemon: :white_check_mark:
                             * :pokemon1:Team:pokemon2: | :pokemon1: Team: pokemon2: :x: No icon will be printed for that team.
-                            * :pokemon:Team:pokemon::pokemon: :grey_question: Icon printed only if icon 1 and icon 2 are same.'''
+                            * :pokemon: icons must not have any space. For Pokemon names with more than one word, use hyphen "-" to separate them. e.g. :urshifu-rapid-strike:
+                            * If a team has three or more icons (presumably accidentally), the first icon is used only if the first two icons are the same.
+                            * Smogon BB code may or may not work.  e.g. of workng BB code: ":salamence-mega:[B] [COLOR=rgb(120, 189, 218)]India[/COLOR][/B]:Salamence-mega:"'''
             
             await message.channel.send(command_1)
 
