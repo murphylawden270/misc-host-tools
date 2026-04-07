@@ -4,8 +4,12 @@ import io
 import re
 import os
 import webserver
+from supabase import create_client
+import asyncio
 
 token = os.environ['token']
+url = os.environ['url']
+key = os.environ['key']
 
 class Client(discord.Client):
     async def on_ready(self):
@@ -30,12 +34,14 @@ To create season schedule for a team tournament, use @schedule followed by the t
 * Smogon BB code may or may not work.  e.g. of workng BB code: ":salamence-mega:[B] [COLOR=rgb(120, 189, 218)]India[/COLOR][/B]:Salamence-mega:"'''
             
             await message.channel.send(command_1)
-            
+    
+        lappland = create_client(url, key)    
 
         if re.search(r'(?<!\w)@schedule(?!\w)', message.content, re.IGNORECASE):
             removed_schedule = re.sub(r'(?<!\w)@schedule(?!\w)', '', message.content, flags=re.IGNORECASE)
 
             if removed_schedule == "":
+                await message.channel.send("**Please enter participant!**")
                 return
 
             team_icon_pair = {}
@@ -63,7 +69,7 @@ To create season schedule for a team tournament, use @schedule followed by the t
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team.strip()] = ""
                         teams.append(icon_removed_team.strip())
-                        warn.append(f'WARNING! Team icon {removed_icon[0]} and {removed_icon[1]} do not match!\nNo icon was printed for {icon_removed_team.strip()}.')
+                        warn.append(f'**WARNING!** Team icon {removed_icon[0]} and {removed_icon[1]} do not match!\nNo icon was printed for {icon_removed_team.strip()}.')
                     elif removed_icon[0].lower() == removed_icon[1].lower() and len(removed_icon) == 2:
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
@@ -72,7 +78,7 @@ To create season schedule for a team tournament, use @schedule followed by the t
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
                         teams.append(icon_removed_team.strip())
-                        warn.append(f'WARNING! More than two icons detected in {icon_removed_team.strip()}!\nHowever, the first two icons were the same. Therefore, they were used.')        
+                        warn.append(f'**WARNING!** More than two icons detected in {icon_removed_team.strip()}!\nHowever, the first two icons were the same. Therefore, they were used.')        
                 else:
                     team_icon_pair[i.strip()] = ""
                     teams.append(i.strip()) 
@@ -115,6 +121,51 @@ To create season schedule for a team tournament, use @schedule followed by the t
             if warn:
                 await message.channel.send("\n".join(warn))
 
+        if re.search(r'(?<!\w)@teams(?!\w)', message.content, re.IGNORECASE):
+            header = re.search(r'(?<!\w)@teams(?!\w)(.*)', message.content, re.IGNORECASE)
+            if header.group(1).strip() == "":
+                await message.channel.send("**Please enter tournament name and number of teams!**")
+                return  
+            
+            values = header.group(1).strip().split(":")
+            if len(values)==1:
+                if re.search(r'^\d+$', values[0].strip()):
+                    await message.channel.send("**Please number of teams!**")
+                    return                     
+                else:
+                    await message.channel.send("**Please enter tournament name!**")
+                    return         
+            elif len(values)==2:
+                if re.search(r'^\d+$', values[0].strip()):
+                    await message.channel.send("**Invalid Values or Values Swapped! Try Again!**")
+                    return
+                elif not re.search(r'^\d+$', values[1].strip()):
+                    await message.channel.send("**Invalid Values or Values Swapped! Try Again!**")
+                    return
+                else:
+                    tour, team =  values[0].strip(), int(values[1].strip())
+            else:
+                await message.channel.send("**Invalid format! Use: `@teams tournament name : number of teams`**")
+                return
+
+            removed_teams = re.sub(r'(?<!\w)@teams(?!\w)(.*)', '', message.content, flags=re.IGNORECASE)
+            if removed_teams.strip() == "":
+                await message.channel.send("**Please enter participant!**")
+                return  
+
+            meowone = lappland.table("teams").insert(
+                {"tour": tour,
+                 "created_by": message.author.id,
+                 "teams": team
+                 })
+            await asyncio.to_thread(meowone.execute)
+
+            meowtwo = lappland.table("team_keys").insert(
+                {"tour": tour,
+                 "created_by": message.author.id,
+                 "team_keys": team
+                 })
+            await asyncio.to_thread(meowtwo.execute)
 
 intents = discord.Intents.default()
 intents.message_content = True
