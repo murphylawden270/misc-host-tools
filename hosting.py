@@ -17,7 +17,7 @@ class Client(discord.Client):
         
         if message.author == client.user:
             return
-
+        
         if re.search(r'(?<!\w)@help(?!\w)', message.content, re.IGNORECASE):
             command_1 = '''# 1. Season Schedule (command: @schedule [case-insensitive])
 To create season schedule for a team tournament, use @schedule followed by the team names, each in a separate line. Note: This command supports :pokemon: icons; however, you must maintain certain formatting:
@@ -30,9 +30,10 @@ To create season schedule for a team tournament, use @schedule followed by the t
 * Smogon BB code may or may not work.  e.g. of workng BB code: ":salamence-mega:[B] [COLOR=rgb(120, 189, 218)]India[/COLOR][/B]:Salamence-mega:"'''
             
             await message.channel.send(command_1)
+            
 
-        if re.search(r'\bschedule\b', message.content, re.IGNORECASE):
-            removed_schedule = re.sub(r'\bschedule\b', '', message.content, flags=re.IGNORECASE)
+        if re.search(r'(?<!\w)@schedule(?!\w)', message.content, re.IGNORECASE):
+            removed_schedule = re.sub(r'(?<!\w)@schedule(?!\w)', '', message.content, flags=re.IGNORECASE)
 
             if removed_schedule == "":
                 return
@@ -47,34 +48,34 @@ To create season schedule for a team tournament, use @schedule followed by the t
 
             if len(teams_with_icons)%2 !=0:
                 teams_with_icons.append("Bye")
+                team_icon_pair["Bye"] = "" 
             
             warn = []
             teams = []
             for i in teams_with_icons:
                 if re.search(r':([^:]+):', i, re.IGNORECASE):
-                    removed_icon = re.findall(r':[\w-]+:', i, re.IGNORECASE)
-                    if len(removed_icon) == 0:
-                        icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
-                        team_icon_pair[icon_removed_team.strip()] = ""
-                        teams.append(icon_removed_team.strip())          
-                    elif len(removed_icon) == 1:
+                    removed_icon = re.findall(r':[\w-]+:', i, re.IGNORECASE)         
+                    if len(removed_icon) == 1:
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
                         teams.append(icon_removed_team.strip())                        
-                    elif removed_icon[0] != removed_icon[1]:
+                    elif removed_icon[0].lower() != removed_icon[1].lower():
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team.strip()] = ""
                         teams.append(icon_removed_team.strip())
                         warn.append(f'WARNING! Team icon {removed_icon[0]} and {removed_icon[1]} do not match!\nNo icon was printed for {icon_removed_team.strip()}.')
-                    elif removed_icon[0] == removed_icon[1] and len(removed_icon) == 2:
+                    elif removed_icon[0].lower() == removed_icon[1].lower() and len(removed_icon) == 2:
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
                         teams.append(icon_removed_team.strip())
-                    elif removed_icon[0] == removed_icon[1] and len(removed_icon) >= 3:
+                    elif removed_icon[0].lower() == removed_icon[1].lower() and len(removed_icon) >= 3:
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
                         teams.append(icon_removed_team.strip())
                         warn.append(f'WARNING! More than two icons detected in {icon_removed_team.strip()}!\nHowever, the first two icons were the same. Therefore, they were used.')        
+                else:
+                    team_icon_pair[i.strip()] = ""
+                    teams.append(i.strip()) 
 
             pair = []
             matchup = []
