@@ -11,13 +11,18 @@ class Client(discord.Client):
     async def on_ready(self):
         print(f"logged on as {self.user}")
 
-    async def on_message(self, message):
+    async def on_message(self, message):        
         if message.guild is not None:
             return
         
+        if message.author == client.user:
+            return
+
         if re.search(r'\bschedule\b', message.content, re.IGNORECASE):
             removed_schedule = re.sub(r'\bschedule\b', '', message.content, flags=re.IGNORECASE)
 
+            if removed_schedule == "":
+                return
 
             team_icon_pair = {}
 
@@ -35,24 +40,30 @@ class Client(discord.Client):
             for i in teams_with_icons:
                 if re.search(r':([^:]+):', i, re.IGNORECASE):
                     removed_icon = re.findall(r':[\w-]+:', i, re.IGNORECASE)
-                    if len(removed_icon) == 1:
-                        icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
-                        team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
-                        teams.append(icon_removed_team.strip())                        
+                    if len(removed_icon) <= 1:
+                        if len(removed_icon) == 1:
+                            icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
+                            team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
+                            teams.append(icon_removed_team.strip())
+                        else:
+                            icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
+                            team_icon_pair[icon_removed_team.strip()] = ""
+                            teams.append(icon_removed_team.strip())
                     elif removed_icon[0] == removed_icon[1]:
-                        icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
-                        team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
-                        teams.append(icon_removed_team.strip())
-                    elif removed_icon[0] != removed_icon[1]:
+                        if len(removed_icon) == 2:
+                            icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
+                            team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
+                            teams.append(icon_removed_team.strip())
+                        elif len(removed_icon) >= 3:
+                            icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
+                            team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
+                            teams.append(icon_removed_team.strip())
+                        warn.append(f'WARNING! More than two icons detected in {icon_removed_team}!\nHowever, the first two icons were the same. Therefore, they were used.')
+                    elif removed_icon[0] != removed_icon[1]:              
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team.strip()] = ""
                         teams.append(icon_removed_team.strip())
-                        warn.append(f'WARNING! Team icon {removed_icon[0]} and {removed_icon[1]} do not match!\nNo icon was be printed for {icon_removed_team}.')
-                    else:
-                        icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
-                        team_icon_pair[icon_removed_team.strip()] = ""
-                        teams.append(icon_removed_team.strip())
-                        warn.append(f'WARNING! More than 2 team icons detected!\nNo icon was be printed for {icon_removed_team}.')                        
+                        warn.append(f'WARNING! {removed_icon[0]} and {removed_icon[1]} do not match!\nNo icon was be printed for {icon_removed_team}.')
 
             pair = []
             matchup = []
