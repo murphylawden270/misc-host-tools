@@ -52,7 +52,7 @@ class Client(discord.Client):
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team.strip()] = ""
                         teams.append(icon_removed_team.strip())
-                        warn.append(f'WARNING! Team icon {removed_icon[0]} and {removed_icon[1]} do not match!\nNo icon was printed for {icon_removed_team}.')
+                        warn.append(f'WARNING! Team icon {removed_icon[0]} and {removed_icon[1]} do not match!\nNo icon was printed for {icon_removed_team.strip()}.')
                     elif removed_icon[0] == removed_icon[1] and len(removed_icon) == 2:
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
@@ -61,7 +61,7 @@ class Client(discord.Client):
                         icon_removed_team = re.sub(r':[\w-]+:', '', i, flags=re.IGNORECASE)
                         team_icon_pair[icon_removed_team.strip()] = removed_icon[0]
                         teams.append(icon_removed_team.strip())
-                        warn.append(f'WARNING! More than two icons detected in {icon_removed_team}!\nHowever, the first two icons were the same. Therefore, they were used.')        
+                        warn.append(f'WARNING! More than two icons detected in {icon_removed_team.strip()}!\nHowever, the first two icons were the same. Therefore, they were used.')        
 
             pair = []
             matchup = []
