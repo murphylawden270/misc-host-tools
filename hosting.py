@@ -128,17 +128,17 @@ To create season schedule for a team tournament, use @schedule followed by the t
             values = header.group(1).strip().split(":")
             if len(values)==1:
                 if re.search(r'^\d+$', values[0].strip()):
-                    await message.channel.send("**Please number of teams!**")
+                    await message.channel.send("**Please enter tournament name!**")
                     return                     
                 else:
-                    await message.channel.send("**Please enter tournament name!**")
+                    await message.channel.send("**Please enter number of teams!**")
                     return         
             elif len(values)==2:
                 if re.search(r'^\d+$', values[0].strip()):
-                    await message.channel.send("**Invalid Values or Values Swapped! Try Again!**")
+                    await message.channel.send("**Invalid Values or Values Swapped! Team name should be first!**")
                     return
                 elif not re.search(r'^\d+$', values[1].strip()):
-                    await message.channel.send("**Invalid Values or Values Swapped! Try Again!**")
+                    await message.channel.send("**Invalid Values or Values Swapped! Number of teams should be second!**")
                     return
                 else:
                     tour, team =  values[0].strip(), int(values[1].strip())
@@ -155,14 +155,14 @@ To create season schedule for a team tournament, use @schedule followed by the t
                 
             meowone = lappland.table("teams").insert(
                 {"tour": tour,
-                 "created_by": message.author.id,
+                 "created_by": str(message.author.id),
                  "teams": team
                  })
             await asyncio.to_thread(meowone.execute)
 
             meowtwo = lappland.table("team_keys").insert(
                 {"tour": tour,
-                 "created_by": message.author.id,
+                 "created_by": str(message.author.id),
                  "team_keys": team
                  })
             await asyncio.to_thread(meowtwo.execute)
