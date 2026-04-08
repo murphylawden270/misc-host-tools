@@ -211,6 +211,9 @@ To create season schedule for a team tournament, use @schedule followed by the t
             
             for f, i in enumerate(tournament_teams, start=1):
                 store = i.split(":")
+                if len(store) == 1:
+                    await message.channel.send("**Invalid Team Input! Please enter the team name and its tag correctly!**")
+                    return
                 tm = store[0].strip()
                 tg = store[1].strip()
                 update_team =  lappland.table("teams").update({
