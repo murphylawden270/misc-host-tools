@@ -33,9 +33,7 @@ To create season schedule for a team tournament, use @schedule followed by the t
 * If a team has three or more icons (presumably accidentally), the first icon is used only if the first two icons are the same.
 * Smogon BB code may or may not work.  e.g. of workng BB code: ":salamence-mega:[B] [COLOR=rgb(120, 189, 218)]India[/COLOR][/B]:Salamence-mega:"'''
             
-            await message.channel.send(command_1)
-    
-        lappland = create_client(url, key)    
+            await message.channel.send(command_1)   
 
         if re.search(r'(?<!\w)@schedule(?!\w)', message.content, re.IGNORECASE):
             removed_schedule = re.sub(r'(?<!\w)@schedule(?!\w)', '', message.content, flags=re.IGNORECASE)
@@ -152,7 +150,9 @@ To create season schedule for a team tournament, use @schedule followed by the t
             if removed_teams.strip() == "":
                 await message.channel.send("**Please enter participant!**")
                 return  
-
+            
+            lappland = create_client(url, key) 
+                
             meowone = lappland.table("teams").insert(
                 {"tour": tour,
                  "created_by": message.author.id,
