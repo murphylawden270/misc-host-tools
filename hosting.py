@@ -158,15 +158,21 @@ To create season schedule for a team tournament, use @schedule followed by the t
                  "created_by": str(message.author.id),
                  "teams": team
                  })
-            await asyncio.to_thread(meowone.execute)
-
+            try:
+                await asyncio.to_thread(meowone.execute)
+            except Exception as e:
+                print(e)
+            
             meowtwo = lappland.table("team_keys").insert(
                 {"tour": tour,
                  "created_by": str(message.author.id),
                  "team_keys": team
                  })
-            await asyncio.to_thread(meowtwo.execute)
-
+            try:
+                await asyncio.to_thread(meowtwo.execute)
+            except Exception as e:
+                print(e)
+            
 intents = discord.Intents.default()
 intents.message_content = True
 client = Client(intents=intents)
