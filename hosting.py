@@ -227,7 +227,7 @@ To create season schedule for a team tournament, use @schedule followed by the t
                     await asyncio.to_thread(update_key.execute)
                 except Exception as e:
                     print(e) 
-            await message.channel.send(f"**Teams and their tags for {tour} has been added! You may check them using `@showteams tournament name`**")
+            await message.channel.send(f"**Teams and their tags for {tour} have been added! You may check them using `@showteams tournament name`**")
             
 intents = discord.Intents.default()
 intents.message_content = True
