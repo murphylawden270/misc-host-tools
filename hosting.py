@@ -142,6 +142,7 @@ To create season schedule for a team tournament, use @schedule followed by the t
                     return
                 else:
                     tour, team =  values[0].strip(), int(values[1].strip())
+                    print(tour,team, flush=True)
             else:
                 await message.channel.send("**Invalid format! Use: `@teams tournament name : number of teams`**")
                 return
