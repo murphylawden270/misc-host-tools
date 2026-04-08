@@ -155,13 +155,13 @@ To create season schedule for a team tournament, use @schedule followed by the t
             lappland = create_client(url, key) 
 
             deleted_old_teams = lappland.table("teams").delete(
-                ).eq("tour", tour).eq("created_by", str(message.author.id)).eq("teams", team)
+                ).eq("tour", tour).eq("created_by", str(message.author.id))
             try:
                 await asyncio.to_thread(deleted_old_teams.execute)
             except Exception as e:
                 print(e)
             deleted_old_team_keys = lappland.table("team_keys").delete(
-                ).eq("tour", tour).eq("created_by", str(message.author.id)).eq("team_keys", team)
+                ).eq("tour", tour).eq("created_by", str(message.author.id))
             try:
                 await asyncio.to_thread(deleted_old_team_keys.execute)
             except Exception as e:
