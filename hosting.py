@@ -142,7 +142,7 @@ To create season schedule for a team tournament, use @schedule followed by the t
                     return
                 else:
                     tour, team =  values[0].strip(), int(values[1].strip())
-                    print(tour,team, flush=True)
+                    print(tour,team)
             else:
                 await message.channel.send("**Invalid format! Use: `@teams tournament name : number of teams`**")
                 return
@@ -173,6 +173,48 @@ To create season schedule for a team tournament, use @schedule followed by the t
                 await asyncio.to_thread(meowtwo.execute)
             except Exception as e:
                 print(e)
+
+            tournament_teams = []
+            for line in removed_teams.split("\n"):
+                clean = line.strip()
+                if clean:
+                    tournament_teams.append(clean)
+            if len(tournament_teams) != team:
+                tournament_teams = []
+                deleted_teams = lappland.table("teams").delete(
+                ).eq("tour", tour).eq("created_by", str(message.author.id)).eq("teams", team)
+                try:
+                    await asyncio.to_thread(deleted_teams.execute)
+                except Exception as e:
+                    print(e)
+                deleted_team_keys = lappland.table("team_keys").delete(
+                ).eq("tour", tour).eq("created_by", str(message.author.id)).eq("team_keys", team)
+                try:
+                    await asyncio.to_thread(deleted_team_keys.execute)
+                except Exception as e:
+                    print(e)
+                await message.channel.send("**Mismatched team number! Please enter the right number of teams!**")
+                return
+            
+            for f, i in enumerate(tournament_teams, start=1):
+                store = i.split(":")
+                tm = store[0].strip()
+                tg = store[1].strip()
+                update_team =  lappland.table("teams").update({
+                f"team_{f}": tm
+                }).eq("tour", tour).eq("created_by", str(message.author.id)).eq("teams", team)
+                try:
+                    await asyncio.to_thread(update_team.execute)
+                except Exception as e:
+                    print(e)
+                update_key = lappland.table("team_keys").update({
+                f"team_key_{f}": tg
+                }).eq("tour", tour).eq("created_by", str(message.author.id)).eq("team_keys", team)
+                try:
+                    await asyncio.to_thread(update_key.execute)
+                except Exception as e:
+                    print(e) 
+            
             
 intents = discord.Intents.default()
 intents.message_content = True
