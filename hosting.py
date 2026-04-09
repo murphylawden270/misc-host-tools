@@ -6,6 +6,9 @@ import os
 import webserver
 from supabase import create_client
 import asyncio
+import requests
+from bs4 import BeautifulSoup
+from collections import Counter
 
 token = os.environ['token']
 url = os.environ['url']
@@ -227,7 +230,76 @@ To create season schedule for a team tournament, use @schedule followed by the t
                     await asyncio.to_thread(update_key.execute)
                 except Exception as e:
                     print(e) 
-            await message.channel.send(f"**Teams and their tags for {tour} have been added! You may check them using `@showteams tournament name`**")
+            await message.channel.send(f"**Teams and their tags for {tour} has been added! You may check them using ```@showteams tournament name```.**")
+
+        if re.search(r'(?<!\w)@tera(?!\w)', message.content, re.IGNORECASE):
+            removed_tera = re.sub(r'(?<!\w)@tera(?!\w)', '', message.content, flags=re.IGNORECASE)
+
+            if removed_tera == "":
+                await message.channel.send("**Please add replays!**")
+                return
+            
+            pokemon_tera = {}
+            table = []
+            replay_warn = []
+
+            header = '''[TABLE width="100%"]
+            [TR][TD width="33.3333%"]Pokemon[/TD][TD width="10%"]Count[/TD][TD width="33.3333%"]Type[/TD][/TR]'''
+            table.append(header)
+
+            no_tera = 0
+
+            for replay in removed_tera.split("\n"):
+                if "https://replay" != replay:
+                    replay_warn.append(f'``{replay}`` is not a replay! No Tera could be extracted!')
+                    continue
+                else:
+                    b = requests.get(replay)
+                c = BeautifulSoup(b.text, features="html.parser")
+                if "<h1>Not Found</h1>" in str(c):
+                    replay_warn.append(f'Ivalid Replay : {replay}! No Tera could be extracted!')
+                    continue
+                else:
+                    x = re.findall(r'\|-terastallize\|(.*): (.*)', str(c))
+                if len(x) == 1:
+                    no_tera += 1
+                elif len(x) == 0:
+                    no_tera += 2
+
+                for i in x:
+                    y = i[1].split("|")
+                    correct_name = re.findall(rf'\|switch\|{i[0]}: {y[0].strip()}\|([^,|]+)(?:,[^|]*)?\|', str(c))
+                    if correct_name[0] not in pokemon_tera:
+                        pokemon_tera[correct_name[0]] = []
+                    tera = y[1].strip()
+                    pokemon_tera[correct_name[0]].append(tera)
+
+            sorted_by_tera = sorted(pokemon_tera.keys(), key=lambda k: len(pokemon_tera[k]), reverse=True)
+            sorted_table = {k: pokemon_tera[k] for k in sorted_by_tera}
+
+            for key, values in sorted_table.items():
+                type_count = {}
+                for i in values:
+                    type = 0
+                    if i not in type_count:
+                        type_count[i] = ""
+                    for j in values:
+                        if i == j:
+                            type += 1
+                    type_count[i] = type
+                each_mon = ", ".join([f"{t} ({c})" for t, c in type_count.items()])
+                h1 = f'[TR][TD width="33.3333%"]:{key}:{key}[/TD][TD width="10%"]{len(values)}[/TD][TD width="33.3333%"]{each_mon}[/TD][/TR]'
+                table.append(h1)
+            table.append(f'[TR][TD width="33.3333%"]No Tera[/TD][TD width="10%"]{no_tera}[/TD][TD width="33.3333%"][/TD][/TR]')
+            table.append("[/TABLE]")
+
+            send2 = "\n".join(table)
+            send_string2 = io.BytesIO(send2.encode("utf-8"))
+            teras = discord.File(fp=send_string2, filename='tera.txt')
+            await message.channel.send(file=teras)
+            if replay_warn:
+                await message.channel.send("\n".join(replay_warn))      
+
             
 intents = discord.Intents.default()
 intents.message_content = True
