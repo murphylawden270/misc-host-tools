@@ -8,7 +8,6 @@ from supabase import create_client
 import asyncio
 import requests
 from bs4 import BeautifulSoup
-from collections import Counter
 
 token = os.environ['token']
 url = os.environ['url']
@@ -250,7 +249,7 @@ To create season schedule for a team tournament, use @schedule followed by the t
             no_tera = 0
 
             for replay in removed_tera.split("\n"):
-                if "https://replay" != replay:
+                if not replay.startswith("https://replay"):
                     replay_warn.append(f'``{replay}`` is not a replay! No Tera could be extracted!')
                     continue
                 else:
