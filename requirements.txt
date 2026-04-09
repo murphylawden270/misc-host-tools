@@ -3,3 +3,6 @@ discord
 flask
 supabase
 asyncio
+requests
+bs4
+collections
