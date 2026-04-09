@@ -118,7 +118,7 @@ To create season schedule for a team tournament, use @schedule followed by the t
             if warn:
                 await message.channel.send("\n".join(warn))
 
-        if re.search(r'(?<!\w)@teams(?!\w)', message.content, re.IGNORECASE):
+        elif re.search(r'(?<!\w)@teams(?!\w)', message.content, re.IGNORECASE):
             header = re.search(r'(?<!\w)@teams(?!\w)(.*)', message.content, re.IGNORECASE)
             if header.group(1).strip() == "":
                 await message.channel.send("**Please enter tournament name and number of teams!**")
@@ -231,7 +231,7 @@ To create season schedule for a team tournament, use @schedule followed by the t
                     print(e) 
             await message.channel.send(f"**Teams and their tags for {tour} has been added! You may check them using ```@showteams tournament name```.**")
 
-        if re.search(r'(?<!\w)@tera(?!\w)', message.content, re.IGNORECASE):
+        elif re.search(r'(?<!\w)@tera(?!\w)', message.content, re.IGNORECASE):
             removed_tera = re.sub(r'(?<!\w)@tera(?!\w)', '', message.content, flags=re.IGNORECASE)
             removed_tera = removed_tera.strip()
             
