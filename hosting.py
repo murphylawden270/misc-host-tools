@@ -233,7 +233,8 @@ To create season schedule for a team tournament, use @schedule followed by the t
 
         if re.search(r'(?<!\w)@tera(?!\w)', message.content, re.IGNORECASE):
             removed_tera = re.sub(r'(?<!\w)@tera(?!\w)', '', message.content, flags=re.IGNORECASE)
-
+            removed_tera = removed_tera.strip()
+            
             if removed_tera == "":
                 await message.channel.send("**Please add replays!**")
                 return
@@ -243,7 +244,7 @@ To create season schedule for a team tournament, use @schedule followed by the t
             replay_warn = []
 
             header = '''[TABLE width="100%"]
-            [TR][TD width="33.3333%"]Pokemon[/TD][TD width="10%"]Count[/TD][TD width="33.3333%"]Type[/TD][/TR]'''
+[TR][TD width="33.3333%"]Pokemon[/TD][TD width="10%"]Count[/TD][TD width="33.3333%"]Type[/TD][/TR]'''
             table.append(header)
 
             no_tera = 0
