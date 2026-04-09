@@ -287,7 +287,7 @@ To create season schedule for a team tournament, use @schedule followed by the t
                         if i == j:
                             type += 1
                     type_count[i] = type
-                each_mon = ", ".join([f"{t} ({c})" for t, c in type_count.items()])
+                each_mon = ", ".join([f"{t} ({n})" for t, n in type_count.items()])
                 h1 = f'[TR][TD width="33.3333%"]:{key}:{key}[/TD][TD width="10%"]{len(values)}[/TD][TD width="33.3333%"]{each_mon}[/TD][/TR]'
                 table.append(h1)
             table.append(f'[TR][TD width="33.3333%"]No Tera[/TD][TD width="10%"]{no_tera}[/TD][TD width="33.3333%"][/TD][/TR]')
